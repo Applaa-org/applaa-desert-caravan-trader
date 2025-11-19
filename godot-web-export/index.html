@@ -60,14 +60,19 @@
         .nav {
             display: flex;
             gap: 20px;
+            align-items: center;
         }
-        .nav a {
+        .nav a, .nav button {
             color: #ffffff;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
         }
-        .nav a:hover {
+        .nav a:hover, .nav button:hover {
             color: #ff6b6b;
         }
         .main-content {
@@ -206,6 +211,92 @@
             color: rgba(255, 255, 255, 0.7);
             font-size: 14px;
         }
+
+        /* Modal Styles for How to Play */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+        .modal-header {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(78, 205, 196, 0.2));
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .close {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: color 0.3s ease;
+        }
+        .close:hover {
+            color: #ff6b6b;
+        }
+        .modal-body {
+            padding: 20px;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border-left: 4px solid #4ecdc4;
+        }
+        .section h3 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .section ul {
+            margin-left: 20px;
+            list-style-type: disc;
+        }
+        .section li {
+            margin-bottom: 8px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -221,6 +312,10 @@
                 width: 100%;
                 max-width: 200px;
             }
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
         }
     </style>
 </head>
@@ -231,11 +326,115 @@
             <span class="logo-text">Desert Caravan Trails</span>
         </div>
         <nav class="nav">
-            <a href="#">Home</a>
+            <button id="howToPlayBtn">How to Play</button>
             <a href="#">Guide</a>
             <a href="#">Settings</a>
         </nav>
     </header>
+
+    <!-- How to Play Modal -->
+    <div id="howToPlayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🏜️ How to Play Desert Caravan Trails</h2>
+                <button class="close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="section">
+                    <h3>🎯 Overview</h3>
+                    <p>You are the leader of a trading caravan journeying across vast, unforgiving deserts. Your goal is to explore the 10x10 map, reach distant towns to trade goods, manage your limited resources, and survive random events like bandit raids and sandstorms. Accumulate wealth through smart trading while keeping your caravan alive. The game is turn-based—each action advances the day and consumes resources.</p>
+                </div>
+
+                <div class="section">
+                    <h3>🗺️ The Map & Movement</h3>
+                    <ul>
+                        <li>The game world is a 10x10 grid representing the desert. Your caravan starts at position (5,5).</li>
+                        <li>Use the movement buttons (North, South, East, West) to navigate. Each move costs resources and advances one day.</li>
+                        <li>The canvas shows the map with sand dunes (yellow spots), your caravan (red triangle), and towns (brown squares with labels).</li>
+                        <li>A white trail line indicates your path from the starting point.</li>
+                        <li>You can't move off the map edges.</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>💧 Resource Management</h3>
+                    <ul>
+                        <li><strong>Water (Blue Bar):</strong> Essential for survival. Depletes by 5 per move. If it reaches 0, game over (dehydration).</li>
+                        <li><strong>Food (Green Bar):</strong> Keeps your caravan fed. Depletes by 3 per move. Hits 0 = starvation (game over).</li>
+                        <li><strong>Mood (Orange Bar):</strong> Represents morale. Depletes by 2 per move. Low mood leads to desertion (game over at 0).</li>
+                        <li><strong>Gold (Yellow Bar):</strong> Your currency for trading. Starts at 500. No cap, but shown up to 1000 for the bar.</li>
+                        <li>Resources are displayed in the sidebar with progress bars. Max is 100 for Water/Food/Mood.</li>
+                        <li>Use the "Rest & Recover" button to regain resources ( +10 Water, +5 Food, +15 Mood) but it advances a day without moving.</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>🏘️ Towns & Trading</h3>
+                    <ul>
+                        <li>There are 4 towns scattered on the map: Oasis Haven (2,2), Sandburg (8,3), Mirage City (5,8), Duneport (1,7).</li>
+                        <li>When you reach a town (your position matches the town's coordinates), trading unlocks.</li>
+                        <li>Click "Trade Goods" to view the marketplace. Each town offers 2 unique goods with buy/sell prices.</li>
+                        <li><strong>Trading Mechanics:</strong> Click "Trade" on a good. If you have enough gold (&gt;= buy price), you buy it (gold -= buy price). For simplicity, selling assumes you have inventory—gold += half sell price if affordable. In a full version, track inventory quantities.</li>
+                        <li>Profit by buying low in one town and selling high in another. Example: Buy Spices in Oasis Haven (20g) and sell in Mirage City (200g potential, but simplified here).</li>
+                        <li>Trading doesn't consume turns but enhances your gold for better survival.</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>🎲 Random Events</h3>
+                    <ul>
+                        <li>After each move or rest, there's a 30% chance of a random event (logged in the sidebar).</li>
+                        <li><strong>Bandit Raid:</strong> Lose 100 gold and 10 mood. Fight or flee implied—resources deducted.</li>
+                        <li><strong>Sandstorm:</strong> Harsh weather; lose 20 water and 15 food.</li>
+                        <li><strong>Hidden Oasis:</strong> Lucky find; gain 30 water and 10 mood.</li>
+                        <li><strong>Wandering Traders:</strong> Quick deal; gain 50 gold.</li>
+                        <li>Events are neutral/positive/negative and appear in the Event Log (last 10 shown). They add atmospheric survival tension.</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>🎮 Controls & Interface</h3>
+                    <ul>
+                        <li><strong>Movement Buttons:</strong> North/South/East/West—steer your caravan.</li>
+                        <li><strong>Rest Button:</strong> Recover resources without moving.</li>
+                        <li><strong>Trade Button:</strong> Appears only in towns; toggles the marketplace view.</li>
+                        <li><strong>Current Status:</strong> Below the canvas—shows your location or day info.</li>
+                        <li><strong>Event Log:</strong> Sidebar bottom—tracks recent events with day stamps.</li>
+                        <li><strong>How to Play Button:</strong> In header—opens this guide anytime.</li>
+                        <li>Responsive design: On mobile, buttons stack vertically, sidebar moves to top.</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>🏆 Objectives & Winning</h3>
+                    <ul>
+                        <li><strong>Survival:</strong> Keep all resources above 0 as long as possible.</li>
+                        <li><strong>Wealth Building:</strong> Aim to accumulate 5000+ gold through trading cycles between towns.</li>
+                        <li><strong>Exploration:</strong> Visit all 4 towns to unlock all goods and maximize profits.</li>
+                        <li><strong>Win Condition:</strong> Reach 10,000 gold or survive 50 days—congratulations message appears. (No strict end; play indefinitely!)</li>
+                        <li><strong>Game Over:</strong> Any resource hits 0—alert shows, refresh to restart.</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>💡 Tips for Success</h3>
+                    <ul>
+                        <li>Plan routes to hit towns frequently for water/food refills via trading or oases.</li>
+                        <li>Rest when mood is low to prevent quick drops.</li>
+                        <li>Avoid long stretches without towns—events can drain resources fast.</li>
+                        <li>Trade strategically: Buy cheap goods in one town, travel to sell high elsewhere.</li>
+                        <li>Monitor the map closely—town names appear near their icons.</li>
+                        <li>Events are random; save gold for bad luck streaks.</li>
+                        <li>For advanced play: Calculate optimal paths (e.g., Oasis Haven → Duneport for quick trades).</li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center; padding: 10px; font-style: italic; color: #4ecdc4;">
+                    Enjoy your journey through the sands! May the winds be favorable. 🌵
+                </div>
+            </div>
+        </div>
+    </div>
 
     <main class="main-content">
         <section class="game-area">
@@ -311,7 +510,8 @@
             day: 1,
             inTown: false,
             currentTown: null,
-            events: []
+            events: [],
+            totalGoldEarned: 0 // Track for win condition
         };
 
         // Mock data: Towns and goods
@@ -409,6 +609,12 @@
                 alert('Your caravan has perished in the desert! Game Over. Refresh to restart.');
                 location.reload();
             }
+
+            // Check win condition
+            if (gameState.resources.gold >= 10000 || gameState.day >= 50) {
+                alert(`Congratulations! You've amassed ${gameState.resources.gold} gold and survived ${gameState.day} days. Your caravan legend lives on! Refresh to play again.`);
+                location.reload();
+            }
         }
 
         // Add event to log
@@ -470,15 +676,17 @@
             document.getElementById('tradingSection').style.display = 'block';
         }
 
-        // Trade function
+        // Trade function (enhanced for win tracking)
         function tradeGood(name, buyPrice, sellPrice) {
             if (gameState.resources.gold >= buyPrice) {
                 gameState.resources.gold -= buyPrice;
+                gameState.totalGoldEarned += buyPrice; // Track for potential expansion
                 addEvent(`Bought ${name} for ${buyPrice} gold.`, 'positive');
-                // Simulate profit on next sell, but for simplicity, just log
-            } else if (gameState.resources.gold >= sellPrice / 2) { // Assume half value sell
-                gameState.resources.gold += sellPrice / 2;
-                addEvent(`Sold ${name} for ${sellPrice / 2} gold.`, 'positive');
+            } else if (gameState.resources.gold >= sellPrice / 2) {
+                const profit = sellPrice / 2;
+                gameState.resources.gold += profit;
+                gameState.totalGoldEarned += profit;
+                addEvent(`Sold ${name} for ${profit} gold.`, 'positive');
             } else {
                 addEvent('Not enough gold to trade!', 'negative');
             }
@@ -520,6 +728,25 @@
             updateResources();
             drawMap();
         }
+
+        // Modal functionality
+        const modal = document.getElementById('howToPlayModal');
+        const btn = document.getElementById('howToPlayBtn');
+        const closeBtn = document.getElementById('closeModal');
+
+        btn.addEventListener('click', () => {
+            modal.style.display = 'block';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
 
         // Event listeners
         document.getElementById('moveNorth').addEventListener('click', () => move('north'));
