@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Desert Caravan Trails</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #ff6b6b 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 50;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav {
+            display: flex;
+            gap: 20px;
+        }
+        .nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .nav a:hover {
+            color: #ff6b6b;
+        }
+        .main-content {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .game-area {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        #gameCanvas {
+            width: 100%;
+            height: 500px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: block;
+            margin: 0 auto;
+        }
+        .story {
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .sidebar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+        .resource {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        .resource-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+        .resource-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+            transition: width 0.3s ease;
+        }
+        .event-log {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .event {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .town-trading {
+            margin-top: 20px;
+        }
+        .goods-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .good {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        .trade-btn {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                order: -1;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🏜️</div>
+            <span class="logo-text">Desert Caravan Trails</span>
+        </div>
+        <nav class="nav">
+            <a href="#">Home</a>
+            <a href="#">Guide</a>
+            <a href="#">Settings</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="game-area">
+            <div class="story">
+                You lead a caravan across vast, unforgiving deserts, seeking fortune through trade in distant oases and towns. Manage your resources wisely, choose routes carefully, and face the perils of bandits and sandstorms. Will your caravan thrive or perish in the sands?
+            </div>
+            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            <div class="controls">
+                <button class="btn" id="moveNorth">Move North</button>
+                <button class="btn" id="moveSouth">Move South</button>
+                <button class="btn" id="moveEast">Move East</button>
+                <button class="btn" id="moveWest">Move West</button>
+                <button class="btn" id="rest">Rest & Recover</button>
+                <button class="btn" id="trade" style="display: none;">Trade Goods</button>
+            </div>
+            <div id="currentStatus" style="text-align: center; margin-top: 15px; font-size: 18px; color: #4ecdc4;"></div>
+        </section>
+
+        <aside class="sidebar">
+            <h3 style="margin-bottom: 15px; text-align: center; color: #ff6b6b;">Caravan Status</h3>
+            <div class="resource">
+                <span>Water</span>
+                <div class="resource-bar">
+                    <div class="resource-fill" id="waterBar" style="width: 80%;"></div>
+                </div>
+                <span id="water">80/100</span>
+            </div>
+            <div class="resource">
+                <span>Food</span>
+                <div class="resource-bar">
+                    <div class="resource-fill" id="foodBar" style="width: 70%;"></div>
+                </div>
+                <span id="food">70/100</span>
+            </div>
+            <div class="resource">
+                <span>Mood</span>
+                <div class="resource-bar">
+                    <div class="resource-fill" id="moodBar" style="width: 60%; background: linear-gradient(90deg, #f39c12, #e67e22);"></div>
+                </div>
+                <span id="mood">60/100</span>
+            </div>
+            <div class="resource">
+                <span>Gold</span>
+                <div class="resource-bar">
+                    <div class="resource-fill" id="goldBar" style="width: 50%; background: linear-gradient(90deg, #f1c40f, #e67e22);"></div>
+                </div>
+                <span id="gold">500</span>
+            </div>
+            <div class="event-log">
+                <h4 style="margin-bottom: 10px; color: #ff6b6b;">Event Log</h4>
+                <div id="events"></div>
+            </div>
+            <div class="town-trading" id="tradingSection" style="display: none;">
+                <h4 style="margin-bottom: 10px; color: #4ecdc4;">Marketplace</h4>
+                <div class="goods-list" id="goodsList"></div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="footer">
+        Made with ❤️ by Applaa | Strategic Exploration Game
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score'); // Not used, but kept for compatibility
+
+        // Game state
+        let gameState = {
+            position: { x: 5, y: 5 }, // Grid position on 10x10 map
+            resources: { water: 80, food: 70, mood: 60, gold: 500 },
+            day: 1,
+            inTown: false,
+            currentTown: null,
+            events: []
+        };
+
+        // Mock data: Towns and goods
+        const towns = [
+            { name: 'Oasis Haven', x: 2, y: 2, goods: [{ name: 'Spices', buy: 20, sell: 40 }, { name: 'Silk', buy: 50, sell: 80 }] },
+            { name: 'Sandburg', x: 8, y: 3, goods: [{ name: 'Dates', buy: 10, sell: 25 }, { name: 'Water Skins', buy: 15, sell: 30 }] },
+            { name: 'Mirage City', x: 5, y: 8, goods: [{ name: 'Gems', buy: 100, sell: 200 }, { name: 'Camels', buy: 200, sell: 350 }] },
+            { name: 'Duneport', x: 1, y: 7, goods: [{ name: 'Salt', buy: 5, sell: 15 }, { name: 'Herbs', buy: 30, sell: 60 }] }
+        ];
+
+        const randomEvents = [
+            { type: 'bandit', message: 'Bandits ambush your caravan! Lost 100 gold and 10 mood.', effects: { gold: -100, mood: -10 } },
+            { type: 'sandstorm', message: 'A fierce sandstorm hits! Lost 20 water and 15 food.', effects: { water: -20, food: -15 } },
+            { type: 'oasis', message: 'You find a hidden oasis! Gained 30 water and 10 mood.', effects: { water: 30, mood: 10 } },
+            { type: 'trade', message: 'Wandering traders offer a deal. Gained 50 gold.', effects: { gold: 50 } }
+        ];
+
+        // Initialize canvas size responsively
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 500;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Draw map
+        function drawMap() {
+            const tileSize = Math.min(canvas.width / 10, canvas.height / 10);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Desert background
+            ctx.fillStyle = '#c19a6b';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw dunes (simple waves)
+            ctx.fillStyle = '#d4af37';
+            for (let i = 0; i < 10; i++) {
+                for (let j = 0; j < 10; j++) {
+                    if (Math.random() > 0.7) {
+                        ctx.beginPath();
+                        ctx.arc(i * tileSize + tileSize/2, j * tileSize + tileSize/2, tileSize/4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            // Draw towns
+            towns.forEach(town => {
+                const tx = town.x * tileSize + tileSize/2;
+                const ty = town.y * tileSize + tileSize/2;
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(tx - tileSize/4, ty - tileSize/4, tileSize/2, tileSize/2);
+                ctx.fillStyle = '#ffd700';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(town.name.split(' ')[0], tx, ty + tileSize/2 + 10);
+            });
+
+            // Draw caravan position
+            const px = gameState.position.x * tileSize + tileSize/2;
+            const py = gameState.position.y * tileSize + tileSize/2;
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.moveTo(px, py - tileSize/3);
+            ctx.lineTo(px - tileSize/4, py + tileSize/3);
+            ctx.lineTo(px + tileSize/4, py + tileSize/3);
+            ctx.closePath();
+            ctx.fill();
+
+            // Path trail
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height - 50);
+            ctx.lineTo(px, py);
+            ctx.stroke();
+        }
+
+        // Update resources UI
+        function updateResources() {
+            document.getElementById('water').textContent = `${gameState.resources.water}/100`;
+            document.getElementById('waterBar').style.width = `${(gameState.resources.water / 100) * 100}%`;
+
+            document.getElementById('food').textContent = `${gameState.resources.food}/100`;
+            document.getElementById('foodBar').style.width = `${(gameState.resources.food / 100) * 100}%`;
+
+            document.getElementById('mood').textContent = `${gameState.resources.mood}/100`;
+            document.getElementById('moodBar').style.width = `${(gameState.resources.mood / 100) * 100}%`;
+
+            document.getElementById('gold').textContent = gameState.resources.gold;
+            document.getElementById('goldBar').style.width = `${Math.min((gameState.resources.gold / 1000) * 100, 100)}%`;
+
+            // Check for game over
+            if (gameState.resources.water <= 0 || gameState.resources.food <= 0 || gameState.resources.mood <= 0) {
+                alert('Your caravan has perished in the desert! Game Over. Refresh to restart.');
+                location.reload();
+            }
+        }
+
+        // Add event to log
+        function addEvent(message, type = 'neutral') {
+            gameState.events.unshift({ message, day: gameState.day, type });
+            const eventsDiv = document.getElementById('events');
+            const eventEl = document.createElement('div');
+            eventEl.className = `event ${type}`;
+            eventEl.textContent = `[Day ${gameState.day}] ${message}`;
+            eventsDiv.insertBefore(eventEl, eventsDiv.firstChild);
+            if (eventsDiv.children.length > 10) {
+                eventsDiv.removeChild(eventsDiv.lastChild);
+            }
+        }
+
+        // Handle random event
+        function triggerRandomEvent() {
+            if (Math.random() < 0.3) { // 30% chance per turn
+                const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+                addEvent(event.message, event.type);
+                Object.keys(event.effects).forEach(key => {
+                    gameState.resources[key] = Math.max(0, gameState.resources[key] + event.effects[key]);
+                });
+                updateResources();
+            }
+        }
+
+        // Check if in town
+        function checkTown() {
+            const town = towns.find(t => t.x === gameState.position.x && t.y === gameState.position.y);
+            if (town) {
+                gameState.inTown = true;
+                gameState.currentTown = town;
+                document.getElementById('trade').style.display = 'inline-block';
+                document.getElementById('currentStatus').textContent = `Arrived at ${town.name}! Trade available.`;
+                showTrading(town.goods);
+            } else {
+                gameState.inTown = false;
+                gameState.currentTown = null;
+                document.getElementById('trade').style.display = 'none';
+                document.getElementById('tradingSection').style.display = 'none';
+                document.getElementById('currentStatus').textContent = `Wandering the endless dunes... Day ${gameState.day}`;
+            }
+        }
+
+        // Show trading UI
+        function showTrading(goods) {
+            const goodsList = document.getElementById('goodsList');
+            goodsList.innerHTML = '';
+            goods.forEach(good => {
+                const goodEl = document.createElement('div');
+                goodEl.className = 'good';
+                goodEl.innerHTML = `
+                    <span>${good.name} (Buy: ${good.buy}g, Sell: ${good.sell}g)</span>
+                    <button class="trade-btn" onclick="tradeGood('${good.name}', ${good.buy}, ${good.sell})">Trade</button>
+                `;
+                goodsList.appendChild(goodEl);
+            });
+            document.getElementById('tradingSection').style.display = 'block';
+        }
+
+        // Trade function
+        function tradeGood(name, buyPrice, sellPrice) {
+            if (gameState.resources.gold >= buyPrice) {
+                gameState.resources.gold -= buyPrice;
+                addEvent(`Bought ${name} for ${buyPrice} gold.`, 'positive');
+                // Simulate profit on next sell, but for simplicity, just log
+            } else if (gameState.resources.gold >= sellPrice / 2) { // Assume half value sell
+                gameState.resources.gold += sellPrice / 2;
+                addEvent(`Sold ${name} for ${sellPrice / 2} gold.`, 'positive');
+            } else {
+                addEvent('Not enough gold to trade!', 'negative');
+            }
+            updateResources();
+        }
+
+        // Movement functions
+        function move(direction) {
+            const { x, y } = gameState.position;
+            let newX = x, newY = y;
+
+            switch (direction) {
+                case 'north': newY = Math.max(0, y - 1); break;
+                case 'south': newY = Math.min(9, y + 1); break;
+                case 'east': newX = Math.min(9, x + 1); break;
+                case 'west': newX = Math.max(0, x - 1); break;
+            }
+
+            gameState.position = { x: newX, y: newY };
+            gameState.day++;
+
+            // Resource drain per move
+            gameState.resources.water = Math.max(0, gameState.resources.water - 5);
+            gameState.resources.food = Math.max(0, gameState.resources.food - 3);
+            gameState.resources.mood = Math.max(0, gameState.resources.mood - 2);
+
+            triggerRandomEvent();
+            checkTown();
+            drawMap();
+            updateResources();
+        }
+
+        function rest() {
+            gameState.resources.water = Math.min(100, gameState.resources.water + 10);
+            gameState.resources.food = Math.min(100, gameState.resources.food + 5);
+            gameState.resources.mood = Math.min(100, gameState.resources.mood + 15);
+            gameState.day++;
+            addEvent('Rested at camp. Resources recovered.', 'positive');
+            updateResources();
+            drawMap();
+        }
+
+        // Event listeners
+        document.getElementById('moveNorth').addEventListener('click', () => move('north'));
+        document.getElementById('moveSouth').addEventListener('click', () => move('south'));
+        document.getElementById('moveEast').addEventListener('click', () => move('east'));
+        document.getElementById('moveWest').addEventListener('click', () => move('west'));
+        document.getElementById('rest').addEventListener('click', rest);
+        document.getElementById('trade').addEventListener('click', () => {
+            document.getElementById('tradingSection').style.display = gameState.inTown ? 'block' : 'none';
+        });
+
+        // Initialize game
+        function init() {
+            drawMap();
+            updateResources();
+            addEvent('Caravan departs from the starting outpost. Safe travels!');
+            document.getElementById('currentStatus').textContent = 'Choose your path wisely...';
+        }
+
+        init();
+
+        // Game loop for animations (subtle dune shift)
+        function gameLoop() {
+            // Optional: Add subtle animations here if needed
+            requestAnimationFrame(gameLoop);
+        }
+        gameLoop();
+
+        console.log('🏜️ Desert Caravan Trails loaded! Strategic exploration game ready.');
+    </script>
+</body>
+</html>
