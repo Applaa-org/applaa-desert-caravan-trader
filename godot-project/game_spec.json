@@ -1,0 +1,180 @@
+{
+  "game": {
+    "name": "Desert Caravan",
+    "type": "2D",
+    "description": "Lead a caravan across vast deserts, trading goods in distant towns while managing resources, avoiding bandits, and surviving harsh sandstorms in this strategic exploration and survival game.",
+    "genre": "strategy",
+    "version": "1.0.0"
+  },
+  "settings": {
+    "window": {
+      "width": 1280,
+      "height": 720,
+      "resizable": true
+    },
+    "physics": {
+      "enabled": true,
+      "gravity": {
+        "x": 0,
+        "y": 980
+      }
+    },
+    "rendering": {}
+  },
+  "scenes": [
+    {
+      "name": "Main",
+      "type": "2D",
+      "path": "res://scenes/Main.tscn",
+      "nodes": [
+        {
+          "name": "Root",
+          "type": "Node2D",
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "children": [
+            {
+              "name": "Caravan Leader",
+              "type": "CharacterBody2D",
+              "position": {
+                "x": 100,
+                "y": 300,
+                "z": 0
+              },
+              "children": [
+                {
+                  "name": "Sprite2D",
+                  "type": "Sprite2D",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "properties": {
+                    "texture": ""
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Camera",
+              "type": "Camera2D",
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 5
+              },
+              "properties": {}
+            },
+            {
+              "name": "Bandit Raid",
+              "type": "CharacterBody2D",
+              "position": {
+                "x": 300,
+                "y": 300,
+                "z": 0
+              },
+              "children": [
+                {
+                  "name": "Sprite2D",
+                  "type": "Sprite2D",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "properties": {
+                    "texture": ""
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Sandstorm",
+              "type": "CharacterBody2D",
+              "position": {
+                "x": 400,
+                "y": 300,
+                "z": 0
+              },
+              "children": [
+                {
+                  "name": "Sprite2D",
+                  "type": "Sprite2D",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "properties": {
+                    "texture": ""
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "camera": {
+        "type": "Camera2D",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      }
+    }
+  ],
+  "assets": {
+    "sprites": [
+      {
+        "name": "caravan",
+        "path": "res://assets/sprites/caravan.png",
+        "type": "character"
+      },
+      {
+        "name": "bandit",
+        "path": "res://assets/sprites/bandit.png",
+        "type": "enemy"
+      },
+      {
+        "name": "town",
+        "path": "res://assets/sprites/town.png",
+        "type": "structure"
+      },
+      {
+        "name": "desert_tile",
+        "path": "res://assets/sprites/desert_tile.png",
+        "type": "environment"
+      }
+    ],
+    "sounds": [
+      {
+        "name": "trade",
+        "path": "res://assets/sounds/trade.wav",
+        "type": "sfx"
+      },
+      {
+        "name": "sandstorm",
+        "path": "res://assets/sounds/sandstorm.wav",
+        "type": "sfx"
+      },
+      {
+        "name": "bandit_attack",
+        "path": "res://assets/sounds/bandit_attack.wav",
+        "type": "sfx"
+      }
+    ],
+    "music": [
+      {
+        "name": "desert_ambience",
+        "path": "res://assets/music/desert_ambience.ogg"
+      },
+      {
+        "name": "town_theme",
+        "path": "res://assets/music/town_theme.ogg"
+      }
+    ]
+  },
+  "scripts": []
+}
